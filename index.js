@@ -20,7 +20,7 @@ server.get('/api/posts', (req, res) => {
 server.get('/api/posts/:id', (req, res) => {
     db.findById(req.params.id)
     .then(post => {
-        if (res)
+        if (post.length > 0)
             res.status(200).json(post);
         else
             res.status(404).json( {message: "The post with the specified ID does not exist."} )
@@ -46,7 +46,7 @@ server.post('/api/posts', (req, res) => {
 server.get('/api/posts/:id/comments', (req, res) => {
     db.findCommentById(req.params.id)
     .then(comments => {
-        if (res)
+        if (comments)
             res.status(200).json(comments);
         else
             res.status(404).json( { message: "The post with the specified ID does not exist."} )
@@ -54,6 +54,17 @@ server.get('/api/posts/:id/comments', (req, res) => {
     .catch(error => {
         res.status(500).json({ errorMessage: "Please provide text for the comment."  });
     });
+});
+
+server.delete('/api/posts/:id', (req, res) => {
+    db.remove(req.params.id)
+    .then(response => {
+        if (response === 0)
+            res.status(404).json({message: "The post with the specified ID does not exist."  });
+        else
+            res.status(200).json({message: response});
+    })
+    .catch(error => {res.status(500).json({ error: "The post could not be removed"})});
 });
 
 server.listen(port, () => console.log(`Server stated on port ${port}`));
