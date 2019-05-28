@@ -55,9 +55,10 @@ router.post("/", (req, res) => {
 });
 
 router.get("/:id/comments", (req, res) => {
-  db.findCommentById(req.params.id)
+  db.findPostComments(req.params.id)
     .then(comments => {
-      if (comments.length > 0) res.status(200).json(comments);
+      if (comments.length > 0) 
+        res.status(200).json(comments);
       else
         res
           .status(404)
@@ -113,8 +114,9 @@ router.put("/:id", async (req, res) => {
         .json({ error: "The post information could not be modified." });
     });
 
-  await db.findById(req.params.id).then(post => {
-    if (post.length > 0) res.status(200).json(post);
+    await db.findById(req.params.id).then(post => {
+    if (post.length > 0) 
+        res.status(200).json(post);
     else
       res
         .status(404)
@@ -122,4 +124,32 @@ router.put("/:id", async (req, res) => {
   });
 });
 
-module.exports = router;
+router.post("/:id/comments", async (req, res) => {
+    
+    const comment = req.body.text;
+    const id = req.params.id;
+
+    if (!comment) {
+      res
+        .status(400)
+        .json({
+            errorMessage: "Please provide text for the comment." 
+        });
+      return;
+    }
+    let newID = -1;
+     db.insertComment({text: comment, post_id: id})
+    .then( async commentID =>  await  db.findCommentById(commentID.id).then(newComment => res.status(201).json(newComment)))
+      .catch(error =>
+        res
+          .status(500)
+          .json({
+            error: "There was an error while saving the comment to the database"
+          })
+      );
+    
+      
+  });
+
+  
+  module.exports = router;
