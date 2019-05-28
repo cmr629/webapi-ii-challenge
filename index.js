@@ -43,4 +43,17 @@ server.post('/api/posts', (req, res) => {
     .catch(error => res.status(500).json({ error: "There was an error while saving the post to the database"  }));
 });
 
+server.get('/api/posts/:id/comments', (req, res) => {
+    db.findCommentById(req.params.id)
+    .then(comments => {
+        if (res)
+            res.status(200).json(comments);
+        else
+            res.status(404).json( { message: "The post with the specified ID does not exist."} )
+    })
+    .catch(error => {
+        res.status(500).json({ errorMessage: "Please provide text for the comment."  });
+    });
+});
+
 server.listen(port, () => console.log(`Server stated on port ${port}`));
