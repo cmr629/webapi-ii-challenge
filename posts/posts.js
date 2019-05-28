@@ -52,15 +52,18 @@ router.get('/:id/comments', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
+
+    await db.findById(req.params.id).then(post =>{
     db.remove(req.params.id)
     .then(response => {
         if (response === 0)
             res.status(404).json({message: "The post with the specified ID does not exist."  });
         else
-            res.status(200).json({message: response});
+            res.status(200).json({message: post});
     })
-    .catch(error => {res.status(500).json({ error: "The post could not be removed"})});
+    .catch(error => {res.status(500).json({ error: "The post could not be removed"})})
+    });
 });
 
 router.put('/:id', (req, res) => {
