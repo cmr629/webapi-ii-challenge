@@ -14,9 +14,22 @@ server.get('/api/posts', (req, res) => {
         res.status(200).json(posts);
     })
     .catch(error => {
-        res.status(500).json({ error: "The posts information could not be retrieved."});
+        res.status(500).json({ error: "The posts information could not be retrieved." });
     });
 });
 
+server.get('/api/posts/:id', (req, res) => {
+
+    db.findById(req.params.id)
+    .then(post => {
+        if (res)
+            res.status(200).json(post);
+        else
+            res.status(404).json( {message: "The post with the specified ID does not exist."} )
+    })
+    .catch(error => {
+        res.status(500).json({ error: "The comments information could not be retrieved." });
+    });
+});
 
 server.listen(port, () => console.log(`Server stated on port ${port}`));
