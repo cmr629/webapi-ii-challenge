@@ -31,7 +31,7 @@ router.get("/:id", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { title, contents } = req.body;
 
   if (!title || !contents) {
@@ -44,7 +44,7 @@ router.post("/", (req, res) => {
   }
 
   db.insert(req.body)
-    .then(id => res.status(201).json(id))
+    .then(async id => await db.findCommentById(id.id).then(post => res.status(201).json(post)))
     .catch(error =>
       res
         .status(500)
